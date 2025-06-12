@@ -1,5 +1,5 @@
 {
-  "version": "0.0.0",
+  "version": "1.0.0",
   "keywords": [],
   "type": "commonjs",
   "exports": {
@@ -66,7 +66,7 @@
     "displayName": "Voting for Strapi 5",
     "description": "Add a simple voting system to any Strapi collection type."
   },
-  "name": "strapi-plugin-voting",
+  "name": "strapi-5-plugin-voting",
   "description": "Add a simple voting system to any Strapi collection type.",
   "license": "MIT",
   "author": "Matt Yiu <\u0015matt.yiu@wavenex.com.hk>"
