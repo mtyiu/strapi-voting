@@ -1,41 +1,73 @@
 {
-  "name": "strapi-plugin-voting",
-  "version": "1.1.9",
-  "description": "Add a simple voting system to any Strapi collection type.",
-  "strapi": {
-    "name": "voting",
-    "displayName": "Voting",
-    "description": "Add a simple voting system to any Strapi collection type.",
-    "kind": "plugin"
+  "version": "0.0.0",
+  "keywords": [],
+  "type": "commonjs",
+  "exports": {
+    "./package.json": "./package.json",
+    "./strapi-admin": {
+      "source": "./admin/src/index.js",
+      "import": "./dist/admin/index.mjs",
+      "require": "./dist/admin/index.js",
+      "default": "./dist/admin/index.js"
+    },
+    "./strapi-server": {
+      "source": "./server/src/index.js",
+      "import": "./dist/server/index.mjs",
+      "require": "./dist/server/index.js",
+      "default": "./dist/server/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "strapi-plugin build",
+    "watch": "strapi-plugin watch",
+    "watch:link": "strapi-plugin watch:link",
+    "verify": "strapi-plugin verify"
   },
   "dependencies": {
-    "axios": "^0.27.1",
-    "formik": "^2.2.9",
-    "geoip-lite": "^1.4.5",
+    "@strapi/design-system": "^2.0.0-rc.25",
+    "@strapi/icons": "^2.0.0-rc.25",
+    "axios": "^1.9.0",
+    "formik": "^2.4.6",
+    "geoip-lite": "^1.4.10",
+    "jimp": "^1.6.0",
     "murmurhash3js": "^3.0.1",
-    "traverse": "^0.6.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-intl": "^7.1.11",
+    "react-router-dom": "^6.30.1",
+    "styled-components": "^6.1.18",
+    "traverse": "^0.6.11",
     "useragent": "^2.3.0",
     "webp-converter": "^2.3.3"
   },
-  "author": "Karolis Stakėnas <karolis.stakenas@gmail.com>",
-  "maintainers": [
-    "Karolis Stakėnas <karolis.stakenas@gmail.com>"
-  ],
-  "engines": {
-    "node": ">=14.x.x <=17.x.x",
-    "npm": ">=7.0.0"
+  "devDependencies": {
+    "@strapi/sdk-plugin": "^5.3.2",
+    "@strapi/strapi": "^5.15.0",
+    "prettier": "^3.5.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.1",
+    "styled-components": "^6.1.18"
   },
+  "peerDependencies": {
+    "@strapi/sdk-plugin": "^5.3.2",
+    "@strapi/strapi": "^5.15.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.1",
+    "styled-components": "^6.1.18"
+  },
+  "strapi": {
+    "kind": "plugin",
+    "name": "voting",
+    "displayName": "Voting for Strapi 5",
+    "description": "Add a simple voting system to any Strapi collection type."
+  },
+  "name": "strapi-plugin-voting",
+  "description": "Add a simple voting system to any Strapi collection type.",
   "license": "MIT",
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Cogitoergo/strapi-voting.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Cogitoergo/strapi-voting/issues"
-  },
-  "homepage": "https://github.com/Cogitoergo/strapi-voting#readme"
+  "author": "Matt Yiu <\u0015matt.yiu@wavenex.com.hk>"
 }

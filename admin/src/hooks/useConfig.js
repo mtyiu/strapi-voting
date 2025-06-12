@@ -2,13 +2,13 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { fetchConfig, restartStrapi, restoreConfig, updateConfig } from '../pages/Settings/utils/api';
 
 const useConfig = (toggleNotification) => {
-  const queryClient = useQueryClient();
-  
+  // const queryClient = useQueryClient();
+
   const fetch = useQuery('get-config', () =>
     fetchConfig(toggleNotification)
   );
 
-  const handleError = (type, callback = () => {}) => {
+  const handleError = (type, callback = () => { }) => {
     toggleNotification({
       type: 'warning',
       message: 'There was an error updating configuration. Please try again.',
@@ -16,9 +16,9 @@ const useConfig = (toggleNotification) => {
     callback();
   };
 
-  const handleSuccess = (type, callback = () => {}, invalidateQueries = true) => {
+  const handleSuccess = (type, callback = () => { }, invalidateQueries = true) => {
     if (invalidateQueries) {
-      queryClient.invalidateQueries('get-config');
+      // queryClient.invalidateQueries('get-config');
     };
     toggleNotification({
       type: 'success',
@@ -38,7 +38,7 @@ const useConfig = (toggleNotification) => {
   });
 
   const restartMutation = useMutation(restartStrapi, {
-    onSuccess: () => handleSuccess('restart', () => {}, false),
+    onSuccess: () => handleSuccess('restart', () => { }, false),
     onError: () => handleError('restart'),
   });
 

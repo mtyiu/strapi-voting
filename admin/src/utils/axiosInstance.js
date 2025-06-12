@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { auth } from '@strapi/helper-plugin';
+// import { auth } from '@strapi/helper-plugin';
 
 const instance = axios.create({
   baseURL: process.env.STRAPI_ADMIN_BACKEND_URL,
@@ -8,7 +8,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   async config => {
     config.headers = {
-      Authorization: `Bearer ${auth.getToken()}`,
+      // Authorization: `Bearer ${auth.getToken()}`,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     };
@@ -24,7 +24,7 @@ instance.interceptors.response.use(
   response => response,
   error => {
     if (error.response?.status === 401) {
-      auth.clearAppStorage();
+      // auth.clearAppStorage();
       window.location.reload();
     }
 
