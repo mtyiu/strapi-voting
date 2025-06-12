@@ -39,7 +39,7 @@ module.exports = ({ strapi }) => ({
     if (!email || !collectionName || !entryId) {
       throw new PluginError(400, 'Email, collectionName and entryId are required.');
     };
-    console.log(`[SERVICES]-[sendConfirmationEmail] Sending email confirmation to <${email}> for entry <${entryId}> in collection <${collectionName}>`);
+    // console.log(`[SERVICES]-[sendConfirmationEmail] Sending email confirmation to <${email}> for entry <${entryId}> in collection <${collectionName}>`);
     // Generate confirmation token
     const confirmationToken = crypto.randomBytes(20).toString('hex');
     // Update entry with the generated token
@@ -77,7 +77,7 @@ module.exports = ({ strapi }) => ({
           replyTo: 'pagalba@lrytas.lt',
           subject: 'Registracijos patvirtinimas'
         });
-      console.log(`[SERVICES]-[sendConfirmationEmail] Sending email confirmation to <${email}> for entry <${entryId}> in collection <${collectionName}> was SUCCESSFUL!`);
+      // console.log(`[SERVICES]-[sendConfirmationEmail] Sending email confirmation to <${email}> for entry <${entryId}> in collection <${collectionName}> was SUCCESSFUL!`);
     } catch (e) {
       console.log(`[SERVICES]-[sendConfirmationEmail] Sending email confirmation to <${email}> for entry <${entryId}> in collection <${collectionName}> FAILED`);
       console.log(e.message)
@@ -89,14 +89,14 @@ module.exports = ({ strapi }) => ({
     if (!confirmationToken || !collectionName) {
       throw new PluginError(400, 'Confirmation token and collectionName are required.');
     };
-    console.log(`[SERVICES]-[confirmEmail] Confirming email with token <${confirmationToken}> in collection <${collectionName}>`);
+    // console.log(`[SERVICES]-[confirmEmail] Confirming email with token <${confirmationToken}> in collection <${collectionName}>`);
     const entry = await strapi.db.query(collectionName).findOne({
       where: { confirmationToken }
     })
     if (!entry) {
       throw new PluginError(400, 'Failed to confirm, entry not found', entry);
     }
-    console.log(`[SERVICES]-[confirmEmail] Updating confirmed entry ID: <${entry.id}> in collection <${collectionName}>`);
+    // console.log(`[SERVICES]-[confirmEmail] Updating confirmed entry ID: <${entry.id}> in collection <${collectionName}>`);
     const updatedEntry = await strapi.documents(collectionName).update({
       documentId: "__TODO__",
       data: { emailConfirmed: true }
@@ -104,7 +104,7 @@ module.exports = ({ strapi }) => ({
     if (!updatedEntry) {
       throw new PluginError(400, 'Failed to confirm, updating entry failed', updatedEntry);
     }
-    console.log(`[SERVICES]-[confirmEmail] Email for entry ID: <${entry.id}> in collection <${collectionName}> confirmed successfuly!`);
+    // console.log(`[SERVICES]-[confirmEmail] Email for entry ID: <${entry.id}> in collection <${collectionName}> confirmed successfuly!`);
     return updatedEntry
   },
 
@@ -134,24 +134,24 @@ module.exports = ({ strapi }) => ({
     }
   },
   async findUser(iphash) {
-    console.log('[VOTING] Looking for user with iphash:', iphash)
+    // console.log('[VOTING] Looking for user with iphash:', iphash)
     try {
       const user = await strapi.documents('plugin::voting.vote').findMany({
         filters: { iphash },
         populate: ['votes']
       });
       if (user) {
-        console.log('[VOTING] User found..', user)
+        // console.log('[VOTING] User found..', user)
         return user[0]
       }
     } catch (e) {
       throw new PluginError(400, e.message);
     }
   },
-  async updateUser(votes, id) {
+  async updateUser(votes, documentId) {
     try {
       const finalVote = await strapi.documents('plugin::voting.vote').update({
-        documentId: "__TODO__",
+        documentId,
 
         data: {
           votes
@@ -180,11 +180,12 @@ module.exports = ({ strapi }) => ({
       throw new PluginError(400, e.message);
     }
   },
-  async doVoting(uid, id, votes) {
+  async doVoting(uid, documentId, votes) {
+    // console.log('[VOTING] Doing voting for uid:', uid, 'documentId:', documentId, 'votes:', votes)
+
     try {
       const entryUpdated = await strapi.documents(uid).update({
-        documentId: "__TODO__",
-
+        documentId,
         data: {
           votes
         }
@@ -197,10 +198,13 @@ module.exports = ({ strapi }) => ({
     }
   },
   async vote(relation, data, user = null, fingerprint = {}) {
-    const config = await this.pluginService().getConfig('googleRecaptcha');
+    const recaptchaConfig = await this.pluginService().getConfig('googleRecaptcha');
+    const votingPeriodsConfig = await this.pluginService().getConfig('votingPeriods');
     const [uid, relatedId] = await this.pluginService().parseRelationString(relation);
     // Google Recaptcha
-    const recaptchaEnabled = config[uid] || false
+    const recaptchaEnabled = recaptchaConfig[uid] || false;
+    const votingPeriods = votingPeriodsConfig[uid] || {};
+    // console.log('[VOTING] Voting periods config:', votingPeriods);
     const dataJson = data && typeof data === 'string' ? JSON.parse(data) : typeof data === 'object' ? data : {}
     if (recaptchaEnabled) {
       if (!dataJson.recaptchaToken) {
@@ -210,6 +214,15 @@ module.exports = ({ strapi }) => ({
       if (!recaptchaResponse || !recaptchaResponse.success) {
         throw new PluginError(400, `Google Recaptcha verification failed.`);
       }
+    }
+    // Check if voting is allowed
+    const now = new Date();
+    const votingPeriod = votingPeriods && votingPeriods.start && votingPeriods.end ? {
+      start: new Date(votingPeriods.start),
+      end: new Date(votingPeriods.end)
+    } : null;
+    if (votingPeriod && (now < votingPeriod.start || now > votingPeriod.end)) {
+      throw new PluginError(403, `Voting is not allowed at the moment. Voting period: ${votingPeriod.start.toISOString()} - ${votingPeriod.end.toISOString()}`);
     }
     // Fingerprinting
     const ip = fingerprint.components.geoip.ip
@@ -231,7 +244,6 @@ module.exports = ({ strapi }) => ({
       // Parse collection relation string
       // const [ uid, relatedId ] = await this.pluginService().parseRelationString(relation);
       // Find related entity by relation string
-      console.log('----', uid, relatedId, relation);
       const relatedEntity = await strapi.documents(uid).findOne({
         documentId: relatedId,
         fields: ['votes']
@@ -245,6 +257,7 @@ module.exports = ({ strapi }) => ({
         try {
           // Try to find user
           const votingUser = await this.findUser(iphash)
+          // console.log('[VOTING] Voting user found:', votingUser)
           if (votingUser) {
             // Check for ids
             const votedBefore = checkForExistingId(votingUser.votes, relation)
@@ -252,7 +265,7 @@ module.exports = ({ strapi }) => ({
               throw new PluginError(403, `Already voted for ${relation}`);
             } else {
               const votes = (await relatedEntity.votes) + 1
-              const voted = await this.doVoting(uid, relatedEntity.id, votes)
+              const voted = await this.doVoting(uid, relatedId, votes)
               if (voted) {
                 // console.log('[VOTING] Voted successfuly', JSON.stringify(voted))
                 const payload = {
@@ -268,7 +281,7 @@ module.exports = ({ strapi }) => ({
                 const voteLog = await this.createVotelog(payload)
                 if (voteLog) {
                   const updatedVotes = votingUser.votes && votingUser.votes.length > 0 ? [...votingUser.votes, voteLog.id] : [voteLog.id]
-                  const updatedUser = await this.updateUser(updatedVotes, votingUser.id)
+                  const updatedUser = await this.updateUser(updatedVotes, votingUser.documentId)
                   if (updatedUser && voted) {
                     // console.log('[VOTING] Voting finished successfuly', JSON.stringify(updatedUser))
                     return voted
@@ -289,7 +302,7 @@ module.exports = ({ strapi }) => ({
             if (votingUserNew) {
               // console.log('[VOTING] New user created:', votingUserNew)
               const votes = (await relatedEntity.votes) + 1
-              const voted = await this.doVoting(uid, relatedEntity.id, votes)
+              const voted = await this.doVoting(uid, relatedId, votes)
               if (voted) {
                 // console.log('[VOTING] Voted successfuly', JSON.stringify(voted))
                 const payload = {
@@ -305,9 +318,9 @@ module.exports = ({ strapi }) => ({
                 const voteLog = await this.createVotelog(payload)
                 if (voteLog) {
                   const updatedVotes = votingUserNew.votes && votingUserNew.votes.length > 0 ? [...votingUserNew.votes, voteLog.id] : [voteLog.id]
-                  const updatedUser = await this.updateUser(updatedVotes, votingUserNew.id)
+                  const updatedUser = await this.updateUser(updatedVotes, votingUserNew.documentId)
                   if (updatedUser && voted) {
-                    console.log('[VOTING] Voting finished successfuly')
+                    // console.log('[VOTING] Voting finished successfuly')
                     return voted
                   } else {
                     console.log('[VOTING] Voting did not successfuly finished, error updating user')

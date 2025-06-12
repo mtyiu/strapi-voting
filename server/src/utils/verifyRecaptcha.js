@@ -9,7 +9,7 @@ module.exports = {
       const recaptchaResponse = await axios(url)
       const recaptchaResponseJson = recaptchaResponse.data
 
-      console.log(`[RECAPTCHA VERIFY]: ${recaptchaResponseJson}, ${recaptchaResponseJson}`)
+      // console.log(`[RECAPTCHA VERIFY]: ${recaptchaResponseJson}, ${recaptchaResponseJson}`)
 
       return recaptchaResponseJson
     } catch (err) {

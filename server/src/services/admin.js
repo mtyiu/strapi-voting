@@ -13,7 +13,7 @@ module.exports = ({ strapi }) => ({
 
   getLocalConfig(prop, defaultValue) {
     const queryProp = buildConfigQueryProp(prop);
-    const result = strapi.config.get(`plugin.voting${ queryProp ? '.' + queryProp : ''}`);
+    const result = strapi.config.get(`plugin.voting${queryProp ? '.' + queryProp : ''}`);
     return isNil(result) ? { data: defaultValue } : result;
   },
 
@@ -35,8 +35,8 @@ module.exports = ({ strapi }) => ({
     const config = await pluginStore.get({ key: 'config' });
     const additionalConfiguration = {
       regex: Object.keys(REGEX).reduce((prev, curr) => ({
-          ...prev,
-          [curr]: REGEX[curr].toString(),
+        ...prev,
+        [curr]: REGEX[curr].toString(),
       }), {}),
     };
 
@@ -67,7 +67,7 @@ module.exports = ({ strapi }) => ({
   },
 
   async updateConfig(body) {
-    console.log('[UPDATE CONFIG BODY]', body)
+    // console.log('[UPDATE CONFIG BODY]', body)
     const pluginStore = await this.getPluginStore();
     await pluginStore.set({ key: 'config', value: body });
     return this.config();
@@ -75,7 +75,7 @@ module.exports = ({ strapi }) => ({
 
   async restoreConfig() {
     const pluginStore = await this.getPluginStore();
-    await pluginStore.delete({key: 'config'});
+    await pluginStore.delete({ key: 'config' });
     return this.config();
   },
 

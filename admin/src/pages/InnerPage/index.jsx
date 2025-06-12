@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect, useRef } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import { fetchCollection } from '../../utils/api';
 
@@ -10,14 +10,15 @@ import { Layouts } from "@strapi/admin/strapi-admin";
 
 const InnerPage = () => {
   const { id } = useParams();
-  const items = useRef({});
-
+  const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(async () => {
-    items.current = await fetchCollection(id); // Here
-
-    setIsLoading(false);
+  useEffect(() => {
+    (async () => {
+      const fetchedItems = await fetchCollection(id);
+      setItems(fetchedItems);
+      setIsLoading(false);
+    })();
   }, []);
 
   if (isLoading) {
@@ -32,7 +33,7 @@ const InnerPage = () => {
           subtitle="Add simple voting system to any collection type"
           as="h2"
         />
-        <CollectionsTable items={items.current} />
+        <CollectionsTable items={items} />
       </Box>
     </>
   );

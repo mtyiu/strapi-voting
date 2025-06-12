@@ -1,7 +1,15 @@
 import pluginId from "../../../pluginId";
 import { axiosInstance, handleAPIError } from '../../../utils';
 
-export const fetchConfig = async (toggleNotification) => {
+export const setToken = (token) => {
+  if (token) {
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete axiosInstance.defaults.headers.common['Authorization'];
+  }
+};
+
+export const fetchConfig = async (toggleNotification, token) => {
   try {
     const { data } = await axiosInstance.get(`/${pluginId}/settings/config`);
     return data;

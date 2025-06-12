@@ -1,8 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { fetchConfig, restartStrapi, restoreConfig, updateConfig } from '../pages/Settings/utils/api';
+import { setToken, fetchConfig, restartStrapi, restoreConfig, updateConfig } from '../pages/Settings/utils/api';
 
-const useConfig = (toggleNotification) => {
+const useConfig = (toggleNotification, token) => {
   // const queryClient = useQueryClient();
+
+  setToken(token);
 
   const fetch = useQuery('get-config', () =>
     fetchConfig(toggleNotification)

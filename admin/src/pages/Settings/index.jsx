@@ -23,9 +23,10 @@ import {
   Grid,
   SingleSelect, SingleSelectOption,
   Tooltip,
-  DatePicker
+  DateTimePicker,
 } from '@strapi/design-system';
 import { Layouts } from "@strapi/admin/strapi-admin";
+import { useAuth } from '@strapi/strapi/admin';
 import { Check, Information, ArrowClockwise, Play } from '@strapi/icons';
 
 import { RestartAlert } from '../../components/RestartAlert/styles';
@@ -38,14 +39,13 @@ const queryClient = new QueryClient();
 const _Settings = () => {
   const [restoreConfirmationVisible, setRestoreConfirmationVisible] = useState(false);
   const [restartRequired, setRestartRequired] = useState(false);
-  const [contentTypeExpanded, setContentTypeExpanded] = useState(undefined);
   const [availableFields, setAvailableFields] = useState([]);
 
   const { toggleNotification } = useNotification();
   // const { lockApp, unlockApp } = useOverlayBlocker();
   // const { lockAppWithAutoreload, unlockAppWithAutoreload } = useAutoReloadOverlayBlocker();
-
-  const { fetch, restartMutation, submitMutation, restoreMutation } = useConfig(toggleNotification);
+  const token = useAuth('VotingSettings', (state) => state.token);
+  const { fetch, restartMutation, submitMutation, restoreMutation } = useConfig(toggleNotification, token);
   const { data: configData, isLoading: isConfigLoading, err: configErr } = fetch;
   const { data: allCollectionsData, isLoading: areCollectionsLoading, err: collectionsErr } = useQuery(
     'get-all-content-types',
@@ -163,11 +163,6 @@ const _Settings = () => {
   };
 
   const handleRestartDiscard = () => setRestartRequired(false);
-
-  const handleSetContentTypeExpanded = (contentType) => {
-    setContentTypeExpanded(contentTypeExpanded && contentType === contentTypeExpanded ? undefined : contentType);
-    handleSetAvailableFields(getCollectionField(contentType, 'attributes'));
-  };
 
   const getCollectionField = (collection, field) => {
     const contentType = allCollections.filter(_ => _.uid === collection).pop()
@@ -318,11 +313,18 @@ const _Settings = () => {
                             <Accordion.Root>
                               {
                                 values.enabledCollections.map((collection) => {
-                                  const key = `collectionSettings-${collection}`
+                                  const key = `collectionSettings-${collection}`;
+                                  const attributes = getCollectionField(collection, 'attributes');
+                                  const attributeKeys = Object.keys(attributes);
+                                  const availableFields = _.isEmpty(attributeKeys) ? [] : attributeKeys
+                                    .map((key) => {
+                                      const y = attributes[key];
+                                      y.name = key;
+                                      return y;
+                                    })
+                                    .filter(item => item.type === 'integer');
                                   return (
                                     <Accordion.Item
-                                      // expanded={contentTypeExpanded && contentTypeExpanded === collection}
-                                      // onToggle={() => handleSetContentTypeExpanded(collection)}
                                       key={key}
                                       value={key}
                                     >
@@ -334,26 +336,28 @@ const _Settings = () => {
                                           <Flex gap={4}>
                                             <Grid.Root gap={4}>
                                               <Grid.Item col={6}>
-                                                <DatePicker
+                                                <DateTimePicker
                                                   label={'Set voting start date'}
                                                   placeholder="Choose start date"
+                                                  locale='en-HK'
                                                   hint={'If not set voting have already started.'}
                                                   onClear={() => setFieldValue('votingPeriods', changeVotingPeriodFor(collection, values.votingPeriods, null, 'start'))}
                                                   onChange={(value) => setFieldValue('votingPeriods', changeVotingPeriodFor(collection, values.votingPeriods, value, 'start'))}
-                                                  selectedDate={values.votingPeriods[collection] && values.votingPeriods[collection].start ? new Date(values.votingPeriods[collection].start) : null}
+                                                  value={values.votingPeriods[collection] && values.votingPeriods[collection].start ? new Date(values.votingPeriods[collection].start) : null}
                                                   clearLabel={'Clear'}
                                                   selectedDateLabel={formattedDate => `Voting start date set on ${formattedDate}`}
                                                   disabled={restartRequired}
                                                 />
                                               </Grid.Item>
                                               <Grid.Item col={6}>
-                                                <DatePicker
+                                                <DateTimePicker
                                                   label={'Set voting end date'}
                                                   placeholder="Choose end date"
+                                                  locale='en-HK'
                                                   hint={'If not set voting never ends.'}
                                                   onClear={() => setFieldValue('votingPeriods', changeVotingPeriodFor(collection, values.votingPeriods, null, 'end'))}
                                                   onChange={(value) => setFieldValue('votingPeriods', changeVotingPeriodFor(collection, values.votingPeriods, value, 'end'))}
-                                                  selectedDate={values.votingPeriods[collection] && values.votingPeriods[collection].end ? new Date(values.votingPeriods[collection].end) : null}
+                                                  value={values.votingPeriods[collection] && values.votingPeriods[collection].end ? new Date(values.votingPeriods[collection].end) : null}
                                                   clearLabel={'Clear'}
                                                   selectedDateLabel={formattedDate => `Voting end date set on ${formattedDate}`}
                                                   disabled={restartRequired}
@@ -394,7 +398,7 @@ const _Settings = () => {
                                                   }
                                                 </SingleSelect>
                                               </Grid.Item>
-                                              <Grid.Item col={4}>
+                                              {/* <Grid.Item col={4}>
                                                 <Checkbox
                                                   label="Enable Google Recaptcha for the given collection"
                                                   hint="(Requires client/front side implementation)"
@@ -413,7 +417,7 @@ const _Settings = () => {
                                                 >
                                                   Send email confirmation
                                                 </Checkbox>
-                                              </Grid.Item>
+                                              </Grid.Item> */}
                                             </Grid.Root>
                                           </Flex>
                                         </Box>
@@ -447,7 +451,7 @@ const _Settings = () => {
                       iconConfirm={<ArrowClockwise />}
                       onConfirm={handleRestoreConfiguration}
                       onCancel={handleRestoreCancel}>
-                      You're about to restore plugin configuration to it default values. It might have destructive impact on already collected content. Do you really want to proceed?
+                      <p>You're about to restore plugin configuration to it default values. It might have destructive impact on already collected content. Do you really want to proceed?</p>
                     </ConfirmationDialog>
                   </Flex>
                 </Box>

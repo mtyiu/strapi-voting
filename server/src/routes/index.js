@@ -52,46 +52,20 @@ module.exports = [
     method: 'GET',
     path: '/settings/config',
     handler: 'admin.settingsConfig',
-    config: {
-      auth: false,
-      policies: [],
-    },
   },
   {
     method: 'PUT',
     path: '/settings/config',
     handler: 'admin.settingsUpdateConfig',
-    config: {
-      auth: false,
-      policies: [],
-    },
   },
   {
     method: 'DELETE',
     path: '/settings/config',
     handler: 'admin.settingsRestoreConfig',
-    config: {
-      auth: false,
-      policies: [],
-    },
   },
   {
     method: 'GET',
     path: '/settings/restart',
     handler: 'admin.settingsRestart',
-    config: {
-      auth: false,
-      policies: [],
-    },
   },
-  // Embeds
-  {
-    method: 'GET',
-    path: '/embeds/:collectionName/:entryId.png',
-    handler: 'embed.findEmbed',
-    config: {
-      auth: false,
-      policies: [],
-    },
-  }
 ];

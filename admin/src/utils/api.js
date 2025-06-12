@@ -11,7 +11,6 @@ const fetchContentTypes = async () => {
 };
 
 const fetchCollection = async (uid) => {
-  console.log('[API] Strapi-Voting: fetchCollection', uid)
   try {
     const { data } = await axios.get(`/${pluginId}/${uid}`);
     return data;
@@ -21,7 +20,6 @@ const fetchCollection = async (uid) => {
 };
 
 const vote = async (uid, id) => {
-  console.log('[API] Strapi-Voting: vote', uid, id)
   try {
     const { data } = await axios.post(`/${pluginId}/${uid}:${id}/vote`);
     return data;
@@ -34,4 +32,4 @@ export {
   fetchContentTypes,
   fetchCollection,
   vote
-}
+};

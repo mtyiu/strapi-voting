@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect, useRef } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 
 import { fetchContentTypes } from '../../utils/api';
 
@@ -9,14 +9,15 @@ import { Page } from "@strapi/strapi/admin";
 import { Layouts } from "@strapi/admin/strapi-admin";
 
 const HomePage = () => {
-  const contentTypes = useRef({});
-
+  const [contentTypes, setContentTypes] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(async () => {
-    contentTypes.current = await fetchContentTypes(); // Here
-
-    setIsLoading(false);
+  useEffect(() => {
+    (async () => {
+      const fetchedContentTypes = await fetchContentTypes();
+      setContentTypes(fetchedContentTypes);
+      setIsLoading(false);
+    })();
   }, []);
 
   if (isLoading) {
@@ -33,7 +34,7 @@ const HomePage = () => {
         />
       </Box>
 
-      <ContentTypesTable contentTypes={contentTypes.current} />
+      <ContentTypesTable contentTypes={contentTypes} />
     </>
   );
 };
