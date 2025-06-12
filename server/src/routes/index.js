@@ -4,38 +4,38 @@ module.exports = [
     method: "GET",
     path: "/content-types",
     handler: "voting.getContentTypes",
-    config: {
-      auth: false,
-      policies: [],
-    },
+    // config: {
+    //   auth: false,
+    //   policies: [],
+    // },
   },
-  {
-    method: "GET",
-    path: "/email-confirmation/:collectionName/:confirmationToken",
-    handler: "voting.confirmEmail",
-    config: {
-      auth: false,
-      policies: [],
-    },
-  },
+  // {
+  //   method: "GET",
+  //   path: "/email-confirmation/:collectionName/:confirmationToken",
+  //   handler: "voting.confirmEmail",
+  //   config: {
+  //     auth: false,
+  //     policies: [],
+  //   },
+  // },
   {
     method: "GET",
     path: "/content-types-fields/:model",
     handler: "voting.getContentTypesFields",
-    config: {
-      auth: false,
-      policies: [],
-    },
+    // config: {
+    //   auth: false,
+    //   policies: [],
+    // },
   },
   // Get collection with items
   {
     method: "GET",
     path: "/:id",
     handler: "voting.getCollection",
-    config: {
-      auth: false,
-      policies: [],
-    },
+    // config: {
+    //   auth: false,
+    //   policies: [],
+    // },
   },
   // Vote
   {
