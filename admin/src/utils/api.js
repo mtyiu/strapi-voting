@@ -1,18 +1,32 @@
 import axios from 'axios';
 import pluginId from "../pluginId";
 
-const fetchContentTypes = async () => {
+const fetchContentTypes = async (token) => {
+  if (!token) {
+    return null;
+  }
   try {
-    const { data } = await axios.get(`/${pluginId}/content-types`);
+    const { data } = await axios.get(`/${pluginId}/content-types`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return data;
   } catch (error) {
     return null;
   }
 };
 
-const fetchCollection = async (uid) => {
+const fetchCollection = async (uid, token) => {
+  if (!token) {
+    return null;
+  }
   try {
-    const { data } = await axios.get(`/${pluginId}/${uid}`);
+    const { data } = await axios.get(`/${pluginId}/${uid}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return data;
   } catch (error) {
     return null;

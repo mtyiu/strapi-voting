@@ -49,7 +49,7 @@ const _Settings = () => {
   const { data: configData, isLoading: isConfigLoading, err: configErr } = fetch;
   const { data: allCollectionsData, isLoading: areCollectionsLoading, err: collectionsErr } = useQuery(
     'get-all-content-types',
-    () => fetchContentTypes(toggleNotification)
+    () => fetchContentTypes(token)
   );
 
   const isLoading = isConfigLoading || areCollectionsLoading;
