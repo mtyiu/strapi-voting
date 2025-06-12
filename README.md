@@ -14,7 +14,7 @@ A plugin for [Strapi Headless CMS](https://github.com/strapi/strapi) that provid
 (Use **npm** to install this plugin within your Strapi project (recommended). [Install npm with these docs](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).)
 
 ```bash
-npm install strapi-plugin-voting@latest
+npm install @mtyiu/strapi-plugin-voting@latest
 ```
 
 After successful installation you've to build a fresh package that includes  plugin UI. To achieve that simply use:
