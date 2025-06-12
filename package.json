@@ -69,5 +69,13 @@
   "name": "strapi-5-plugin-voting",
   "description": "Add a simple voting system to any Strapi collection type.",
   "license": "MIT",
-  "author": "Matt Yiu <\u0015matt.yiu@wavenex.com.hk>"
+  "author": "Matt Yiu <\u0015matt.yiu@wavenex.com.hk>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mtyiu/strapi-voting.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mtyiu/strapi-voting/issues"
+  },
+  "homepage": "https://github.com/mtyiu/strapi-voting#readme"
 }
