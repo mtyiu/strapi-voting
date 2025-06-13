@@ -186,6 +186,7 @@ module.exports = ({ strapi }) => ({
     try {
       const entryUpdated = await strapi.documents(uid).update({
         documentId,
+        status: 'published',
         data: {
           votes
         }
