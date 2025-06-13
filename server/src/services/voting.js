@@ -209,7 +209,7 @@ module.exports = ({ strapi }) => ({
         }
       });
       if (entryUpdated) {
-        return entryUpdated
+        return entryUpdated;
       }
     } catch (e) {
       throw new PluginError(400, e.message);
@@ -293,7 +293,7 @@ module.exports = ({ strapi }) => ({
                 const voteLog = await this.removeVotelog(payload);
                 if (voteLog) {
                   const votes = (await relatedEntity.votes) - 1;
-                  await this.doVoting(uid, relatedId, votes);
+                  return await this.doVoting(uid, relatedId, votes);
                 } else {
                   console.log('[VOTING] VoteLog creation failed, aborting..');
                 }
