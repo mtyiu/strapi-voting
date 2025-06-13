@@ -47,6 +47,15 @@ module.exports = [
       policies: [],
     },
   },
+  {
+    method: "DELETE",
+    path: "/:relation/vote",
+    handler: "voting.deleteVote",
+    config: {
+      auth: false,
+      policies: [],
+    },
+  },
   // Settings
   {
     method: 'GET',

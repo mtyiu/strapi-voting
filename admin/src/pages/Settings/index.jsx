@@ -306,10 +306,8 @@ const _Settings = () => {
                           <Field.Root>
                             <Field.Label>
                               Custom settings per content type
-                              <Tooltip description="Configure each collection types settings like voting field and voting duration.">
-                                <Information aria-hidden={true} />
-                              </Tooltip>
                             </Field.Label>
+                            <small>Configure each collection types settings like voting field and voting duration.</small>
                             <Accordion.Root>
                               {
                                 values.enabledCollections.map((collection) => {

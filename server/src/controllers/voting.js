@@ -44,7 +44,24 @@ module.exports = {
 
     // console.log('[CONTROLLERS] Strapi-Voting: vote', relation);
     try {
-      const entity = await this.getService().vote(relation, body, user, fingerprint);
+      const entity = await this.getService().vote(relation, body, user, fingerprint, true);
+      if (entity) {
+        return entity;
+      }
+    } catch (e) {
+      throwError(ctx, e);
+    }
+  },
+  async deleteVote(ctx) {
+    const { request, params = {}, state = {} } = ctx;
+    const { relation } = parseParams(params);
+    const { user } = state;
+    const { body = {} } = request;
+    const { fingerprint } = ctx.req
+
+    // console.log('[CONTROLLERS] Strapi-Voting: vote', relation);
+    try {
+      const entity = await this.getService().vote(relation, body, user, fingerprint, false);
       if (entity) {
         return entity;
       }

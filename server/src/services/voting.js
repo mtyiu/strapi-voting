@@ -133,6 +133,23 @@ module.exports = ({ strapi }) => ({
       throw new PluginError(400, e.message);
     }
   },
+  async removeVotelog(payload) {
+    try {
+      const tmp = await strapi.documents('plugin::voting.votelog').findFirst({
+        filters: payload,
+      });
+      if (tmp) {
+        const votelog = await strapi.documents('plugin::voting.votelog').delete({
+          documentId: tmp.documentId,
+          locale: '*',
+        });
+        return votelog;
+      }
+      return null;
+    } catch (e) {
+      throw new PluginError(400, e.message);
+    }
+  },
   async findUser(iphash) {
     // console.log('[VOTING] Looking for user with iphash:', iphash)
     try {
@@ -198,7 +215,7 @@ module.exports = ({ strapi }) => ({
       throw new PluginError(400, e.message);
     }
   },
-  async vote(relation, data, user = null, fingerprint = {}) {
+  async vote(relation, data, user = null, fingerprint = {}, add = true) {
     const recaptchaConfig = await this.pluginService().getConfig('googleRecaptcha');
     const votingPeriodsConfig = await this.pluginService().getConfig('votingPeriods');
     const [uid, relatedId] = await this.pluginService().parseRelationString(relation);
@@ -226,17 +243,17 @@ module.exports = ({ strapi }) => ({
       throw new PluginError(403, `Voting is not allowed at the moment. Voting period: ${votingPeriod.start.toISOString()} - ${votingPeriod.end.toISOString()}`);
     }
     // Fingerprinting
-    const ip = fingerprint.components.geoip.ip
+    const ip = fingerprint.components.geoip.ip;
     const country = fingerprint.components.geoip.country || 'DEV';
-    const userAgent = fingerprint.components.useragent.string
+    const userAgent = fingerprint.components.useragent.string;
     if (!ip || !country || !userAgent) {
       throw new PluginError(400, `There has been an error parsing userAgent/IP strings. IP: ${ip}, Country: ${country}, userAgent: ${userAgent}`);
     } else {
       // if (country !== 'LT' && country !== 'ADMIN') {
       //   throw new PluginError(400, `Voting is only possible from within Lithuania. IP: ${ip}, Country: ${country}, userAgent: ${userAgent}`);
       // }
-      const hash = fingerprint.hash
-      const iphash = ip.split(',')[0] + hash
+      const hash = fingerprint.hash;
+      const iphash = ip.split(',')[0] + hash;
       // Check for correct collection relation string in req
       const singleRelationFulfilled = relation && REGEX.relatedUid.test(relation);
       if (!singleRelationFulfilled) {
@@ -263,10 +280,27 @@ module.exports = ({ strapi }) => ({
             // Check for ids
             const votedBefore = checkForExistingId(votingUser.votes, relation)
             if (votedBefore) {
-              throw new PluginError(403, `Already voted for ${relation}`);
-            } else {
-              const votes = (await relatedEntity.votes) + 1
-              const voted = await this.doVoting(uid, relatedId, votes)
+              if (add) {
+                throw new PluginError(403, `Already voted for ${relation}`);
+              } else {
+                // console.log('[VOTING] User already voted, but removing vote..')
+                const payload = {
+                  ip: ip,
+                  iphash: iphash,
+                  related: relation,
+                  voteId: String(relatedEntity.id),
+                };
+                const voteLog = await this.removeVotelog(payload);
+                if (voteLog) {
+                  const votes = (await relatedEntity.votes) - 1;
+                  await this.doVoting(uid, relatedId, votes);
+                } else {
+                  console.log('[VOTING] VoteLog creation failed, aborting..');
+                }
+              }
+            } else if (add) {
+              const votes = (await relatedEntity.votes) + 1;
+              const voted = await this.doVoting(uid, relatedId, votes);
               if (voted) {
                 // console.log('[VOTING] Voted successfuly', JSON.stringify(voted))
                 const payload = {
@@ -278,26 +312,26 @@ module.exports = ({ strapi }) => ({
                   user: votingUser.id,
                   voteId: String(relatedEntity.id),
                   votedAt: new Date()
-                }
-                const voteLog = await this.createVotelog(payload)
+                };
+                const voteLog = await this.createVotelog(payload);
                 if (voteLog) {
-                  const updatedVotes = votingUser.votes && votingUser.votes.length > 0 ? [...votingUser.votes, voteLog.id] : [voteLog.id]
-                  const updatedUser = await this.updateUser(updatedVotes, votingUser.documentId)
+                  const updatedVotes = votingUser.votes && votingUser.votes.length > 0 ? [...votingUser.votes, voteLog.id] : [voteLog.id];
+                  const updatedUser = await this.updateUser(updatedVotes, votingUser.documentId);
                   if (updatedUser && voted) {
                     // console.log('[VOTING] Voting finished successfuly', JSON.stringify(updatedUser))
-                    return voted
+                    return voted;
                   } else {
-                    console.log('[VOTING] Voting did not successfuly finished, error updating user')
+                    console.log('[VOTING] Voting did not successfuly finished, error updating user');
                   }
                 } else {
-                  console.log('[VOTING] VoteLog creation failed, aborting..')
+                  console.log('[VOTING] VoteLog creation failed, aborting..');
                 }
               } else {
-                console.log('[VOTING] Voting failed, aborting..')
+                console.log('[VOTING] Voting failed, aborting..');
               }
             }
-            return { test: 'test' }
-          } else {
+            return {};
+          } else if (add) {
             // console.log('[VOTING] User not found, creating one..')
             const votingUserNew = await this.createNewUser(ip, iphash)
             if (votingUserNew) {
@@ -335,6 +369,9 @@ module.exports = ({ strapi }) => ({
             } else {
               console.log('[VOTING] New user creation failed, aborting..')
             }
+          } else {
+            // console.log('[VOTING] User found, but not adding vote, returning empty object')
+            return {};
           }
         } catch (e) {
           throw new PluginError(400, e.message);
