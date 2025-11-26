@@ -2,7 +2,8 @@ const PluginError = require('./error');
 
 module.exports = {
   throwError: (ctx, e) => {
-    if (e instanceof PluginError){
+    console.error('[ERROR] Strapi-Voting:', ctx, e);
+    if (e instanceof PluginError) {
       return ctx.throw(e.status, e.message);
     }
     throw e;
@@ -16,8 +17,8 @@ module.exports = {
     const value = params[curr];
     const parsedValue = Number(value);
     return {
-     ...prev,
-     [curr]: isNaN(parsedValue) ? value : parsedValue
-   };
+      ...prev,
+      [curr]: isNaN(parsedValue) ? value : parsedValue
+    };
   }, {})
 }
