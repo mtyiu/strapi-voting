@@ -36,11 +36,10 @@ export default {
         return component;
       },
       permissions: [
-        // Uncomment to set the permissions of the plugin here
-        // {
-        //   action: '', // the action name should be plugin::plugin-name.actionType
-        //   subject: null,
-        // },
+        {
+          action: 'plugin::voting.menu.access',
+          subject: null,
+        },
       ],
     });
     app.createSettingSection(
@@ -67,6 +66,16 @@ export default {
             return component;
           },
           permissions: [],
+        },
+        {
+          intlLabel: {
+            id: `${pluginId}.settings.access`,
+            defaultMessage: 'Settings',
+          },
+          id: 'voting-settings',
+          to: `/settings/${pluginId}`,
+          action: 'plugin::voting.settings.access',
+          subject: null,
         },
       ]
     );
