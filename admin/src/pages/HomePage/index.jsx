@@ -1,6 +1,7 @@
 import React, { memo, useState, useEffect } from 'react';
 
 import { fetchContentTypes } from '../../utils/api';
+import PERMISSIONS from '../../permissions';
 
 import ContentTypesTable from '../../components/ContentTypesTable';
 
@@ -31,7 +32,7 @@ const HomePage = () => {
   }
 
   return (
-    <>
+    <Page.Protect permissions={PERMISSIONS.accessMain}>
       <Box background="neutral100">
         <Layouts.BaseHeader
           title="Voting"
@@ -41,7 +42,7 @@ const HomePage = () => {
       </Box>
 
       <ContentTypesTable contentTypes={contentTypes} />
-    </>
+    </Page.Protect>
   );
 };
 

@@ -65,17 +65,12 @@ export default {
 
             return component;
           },
-          permissions: [],
-        },
-        {
-          intlLabel: {
-            id: `${pluginId}.settings.access`,
-            defaultMessage: 'Settings',
-          },
-          id: 'voting-settings',
-          to: `/settings/${pluginId}`,
-          action: 'plugin::voting.settings.access',
-          subject: null,
+          permissions: [
+            {
+              action: 'plugin::voting.settings.access',
+              subject: null,
+            },
+          ],
         },
       ]
     );

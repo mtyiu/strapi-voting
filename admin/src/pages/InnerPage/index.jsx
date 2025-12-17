@@ -1,6 +1,7 @@
 import React, { memo, useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import { fetchCollection } from '../../utils/api';
+import PERMISSIONS from '../../permissions';
 
 import CollectionsTable from '../../components/CollectionsTable';
 
@@ -30,7 +31,7 @@ const InnerPage = () => {
   }
 
   return (
-    <>
+    <Page.Protect permissions={PERMISSIONS.accessMain}>
       <Box background="neutral100">
         <Layouts.BaseHeader
           title="Voting"
@@ -39,7 +40,7 @@ const InnerPage = () => {
         />
         <CollectionsTable items={items} />
       </Box>
-    </>
+    </Page.Protect>
   );
 };
 

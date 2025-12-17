@@ -2,6 +2,7 @@ import React, { memo, useState, useEffect, useRef } from 'react';
 import { useQuery } from 'react-query';
 // Api
 import { fetchContentTypes } from '../../utils/api';
+import PERMISSIONS from '../../permissions';
 // Config
 import { QueryClient, QueryClientProvider } from 'react-query';
 import useConfig from '../../hooks/useConfig';
@@ -464,9 +465,11 @@ const _Settings = () => {
 
 const Settings = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <_Settings />
-    </QueryClientProvider>
+    <Page.Protect permissions={PERMISSIONS.settingsAccess}>
+      <QueryClientProvider client={queryClient}>
+        <_Settings />
+      </QueryClientProvider>
+    </Page.Protect>
   );
 };
 
