@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+const backendURL = process.env.STRAPI_ADMIN_BACKEND_URL || '';
 const instance = axios.create({
-  baseURL: process.env.STRAPI_ADMIN_BACKEND_URL,
+  baseURL: backendURL.endsWith('/') ? backendURL : `${backendURL}/`,
 });
 
 instance.interceptors.request.use(

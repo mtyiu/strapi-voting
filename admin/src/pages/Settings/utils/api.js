@@ -14,7 +14,7 @@ export const fetchConfig = async (toggleNotification, token) => {
     return null;
   }
   try {
-    const { data } = await axiosInstance.get(`/${pluginId}/settings/config`);
+    const { data } = await axiosInstance.get(`${pluginId}/settings/config`);
     return data;
   } catch (error) {
     handleAPIError(error, toggleNotification);
@@ -26,7 +26,7 @@ export const updateConfig = async (body, toggleNotification) => {
     return null;
   }
   try {
-    const { data } = await axiosInstance.put(`/${pluginId}/settings/config`, body);
+    const { data } = await axiosInstance.put(`${pluginId}/settings/config`, body);
     return data;
   } catch (error) {
     handleAPIError(error, toggleNotification);
@@ -38,7 +38,7 @@ export const restoreConfig = async (toggleNotification) => {
     return null;
   }
   try {
-    const { data } = await axiosInstance.delete(`/${pluginId}/settings/config`);
+    const { data } = await axiosInstance.delete(`${pluginId}/settings/config`);
     return data;
   } catch (error) {
     handleAPIError(error, toggleNotification);
@@ -50,7 +50,7 @@ export const restartStrapi = async (toggleNotification) => {
     return null;
   }
   try {
-    const { data } = await axiosInstance.get(`/${pluginId}/settings/restart`);
+    const { data } = await axiosInstance.get(`${pluginId}/settings/restart`);
     return data;
   } catch (error) {
     handleAPIError(error, toggleNotification);

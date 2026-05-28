@@ -41,7 +41,7 @@ const ContentTypesTable = ({ contentTypes }) => {
                 <Td>
                   <Flex justifyContent="right" alignItems="right">
                     <LinkButton
-                      href={`/admin/plugins/voting/${item.uid}`}
+                      to={item.uid}
                     >
                       View Results
                     </LinkButton>
