@@ -41,7 +41,7 @@ const ContentTypesTable = ({ contentTypes }) => {
                 <Td>
                   <Flex justifyContent="right" alignItems="right">
                     <LinkButton
-                      to={item.uid}
+                      href={`${process.env.ADMIN_PATH}/plugins/voting/${item.uid}`}
                     >
                       View Results
                     </LinkButton>
@@ -55,7 +55,7 @@ const ContentTypesTable = ({ contentTypes }) => {
                 content="You don't have any collection-types yet..."
                 action={
                   <LinkButton
-                    to="/plugins/content-type-builder"
+                    href={`${process.env.ADMIN_PATH}/plugins/content-type-builder`}
                     variant="secondary"
                     startIcon={<Plus />}
                   >

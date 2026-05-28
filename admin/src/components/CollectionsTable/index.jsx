@@ -19,6 +19,7 @@ import { Plus, CaretDown } from '@strapi/icons';
 import _ from 'lodash';
 // API
 import { vote } from '../../utils/api';
+
 const handleVoting = async (uid, id) => {
   await vote(uid, id)
   console.table([{ 'UID': uid, 'ID': id }])
@@ -69,7 +70,7 @@ const CollectionsTable = ({ items }) => {
           content="You don't have any items in this collection yet..."
           action={
             <LinkButton
-              to="/plugins/content-type-builder"
+              href={`${process.env.ADMIN_PATH}/plugins/content-type-builder`}
               variant="secondary"
               startIcon={<Plus />}
             >
